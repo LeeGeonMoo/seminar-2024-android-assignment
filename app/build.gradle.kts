@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    //kotlin("jvm") version "1.9.10"
+    kotlin("plugin.serialization") version "1.9.10"
 }
 
 android {
@@ -35,6 +37,7 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -45,4 +48,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") // serialization 라이브러리 추가
+
+    implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
 }

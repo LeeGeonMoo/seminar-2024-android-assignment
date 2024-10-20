@@ -3,16 +3,22 @@ package com.wafflestudio.waffleseminar2024
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.text.SpannableString
 import android.text.TextPaint
+import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.Menu
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -89,6 +95,10 @@ class UserInformationActivity: AppCompatActivity() {
 
                     }
                 }
+
+                if (tab.position == 2) { // 검색 눌리면 나와야하는 함수들 ... search()라는 함수로 새롭게 정의
+                    viewPager.post {search()}
+                }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
@@ -102,6 +112,51 @@ class UserInformationActivity: AppCompatActivity() {
         })
     }
 
+    private fun search() { // 메뉴 탭에서 실행되어야하는 함수들 다 담아주면 됨.
+
+        lateinit var viewModel: GenreViewModel
+        lateinit var recyclerView: RecyclerView
+        lateinit var adapter: GenreAdapter
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = GridLayoutManager(this, 2) // 리사이클러뷰의 세부 설정. 2열 그리드로 설정
+
+
+
+        var movieViewModel = ViewModelProvider(this).get(MovieViewModel::class.java) // moviedata위한 뷰모델 불러오기.
+        lateinit var movieAdapter: MovieAdapter
+
+        movieViewModel.filteredMovieList.observe(this, { movies -> // movieList 데이터가 바뀌거나 불릴때마다 adapter가 movieadapter로 초기화된다.
+            movieAdapter = MovieAdapter(movies) // 그리고 그 adapter가 어떤식으로 recyclerview에서 작동할지는 adapter 클래스에 정의가 되어있다.
+            recyclerView.adapter = movieAdapter
+        })
+
+
+
+        viewModel = ViewModelProvider(this).get(GenreViewModel::class.java) // 새로운 뷰모델 설정. (영화 장르 관련)
+        viewModel.genres.observe(this, { genres -> // 뷰모델의 genres라는 속성을 계속 관찰한다. 뭔가 변화가 있으면 반영한다.
+            adapter = GenreAdapter(genres) // 어뎁터과 viewmodel을 먼저 연결.
+            recyclerView.adapter = adapter // 리사이클러뷰가 비로소 어댑터를 연결하면서 viewmodel의 데이터들을 다 받는거다.
+        }) // 얘가 뒤에 있어야 처음에 genre로 시작한다.ㅁ
+
+
+        var BoldText : TextView = findViewById(R.id.genre_text)
+        BoldText.text = "장르 탐색"
+        // EditText에 TextWatcher 추가
+        val searchEditText: EditText = findViewById(R.id.search_edit_text)
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                s?.let {
+                    movieViewModel.filterMovies(it.toString()) // 단방향 흐름. 이제 클릭이 입력 되면 데이터 뷰 모델 안에서 데이터를 필터링 하는 작업을..
+                    BoldText.text = "검색 결과"
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_user_information, menu)

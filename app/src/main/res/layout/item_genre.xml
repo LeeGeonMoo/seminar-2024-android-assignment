@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/genreName"
+        android:layout_width="170dp"
+        android:layout_height="60dp"
+        android:background="#E0FFFF"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:padding="10dp"
+        android:gravity="center_vertical"
+        />
+
+<!--리사이클러뷰 안에 들어가는 한 칸을 정의하는 칸.-->
+</LinearLayout>
